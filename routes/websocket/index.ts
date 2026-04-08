@@ -27,14 +27,7 @@ export const websocketRoutes = async (fastify: FastifyInstance) => {
 
     try {
       // Attendre le message d'authentification
-      await handleAuthentication(socket, fastify, request, (auth) => {
-        authSocket = auth;
-      });
-
-      if (!authSocket) {
-        socket.close(1008, "Authentication failed");
-        return;
-      }
+      authSocket = await handleAuthentication(socket, fastify, request);
 
       // Enregistrer la connexion
       websocketService.registerRestaurantConnection(
@@ -83,15 +76,14 @@ async function handleAuthentication(
   socket: WebSocket,
   fastify: FastifyInstance,
   request: FastifyRequest,
-  onAuthenticated: (auth: AuthenticatedSocket) => void,
-): Promise<void> {
+): Promise<AuthenticatedSocket> {
   return new Promise((resolve, reject) => {
     const timeout = setTimeout(() => {
       socket.close(1008, "Authentication timeout");
       reject(new Error("Authentication timeout"));
     }, 30000);
 
-    socket.on("message", async (data) => {
+    socket.on("message", async (data: Buffer) => {
       try {
         clearTimeout(timeout);
         const message: WebSocketMessage = JSON.parse(data.toString());
@@ -153,9 +145,8 @@ async function handleAuthentication(
           socket,
         };
 
-        onAuthenticated(authSocket);
         socket.removeAllListeners("message"); // Retirer le listener temporaire
-        resolve();
+        resolve(authSocket);
       } catch (error) {
         console.error("[WS] Authentication error:", error);
         socket.close(1008, "Authentication failed");
@@ -163,7 +154,7 @@ async function handleAuthentication(
       }
     });
 
-    socket.on("error", (error) => {
+    socket.on("error", (error: Error) => {
       console.error("[WS] Connection error during authentication:", error);
       clearTimeout(timeout);
       reject(error);
@@ -176,7 +167,7 @@ async function handleAuthentication(
  */
 function setupSocketListeners(socket: WebSocket, authSocket: AuthenticatedSocket) {
   // Listener pour les messages entrants
-  socket.on("message", (data) => {
+  socket.on("message", (data: Buffer) => {
     try {
       const message: WebSocketMessage = JSON.parse(data.toString());
 
@@ -204,7 +195,7 @@ function setupSocketListeners(socket: WebSocket, authSocket: AuthenticatedSocket
   });
 
   // Listener pour les erreurs
-  socket.on("error", (error) => {
+  socket.on("error", (error: Error) => {
     console.error(
       `[WS] Error for restaurant ${authSocket.restaurantId}:`,
       error,
