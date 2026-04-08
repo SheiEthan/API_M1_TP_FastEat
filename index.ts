@@ -1,9 +1,12 @@
 import "./config/dotenvx.js";
 import fastify, { FastifyError, FastifyReply, FastifyRequest } from "fastify";
 import cors from "@fastify/cors";
+import websocket from "@fastify/websocket";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { registerRoutes } from "./routes/index.js";
+import { websocketRoutes } from "./routes/websocket/index.js";
+import { registerGraphQL } from "./graphql/index.js";
 import { AppError } from "./common/exceptions.js";
 import jwtDecorator from "./decorators/jwtDecorator.js";
 import { prisma } from "./prisma/prismaInstance.js";
@@ -66,10 +69,20 @@ const start = async () => {
 
     await server.register(cors, {});
 
+    // Enregistrer le plugin WebSocket
+    await server.register(websocket);
+
     // Enregistrer le décorateur JWT
     await server.register(jwtDecorator);
 
+    // Enregistrer les routes API
     await registerRoutes(server);
+
+    // Enregistrer les routes WebSocket
+    await server.register(websocketRoutes, { prefix: "/ws" });
+
+    // Enregistrer GraphQL
+    await registerGraphQL(server);
 
     await server.ready();
 

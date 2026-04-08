@@ -1,6 +1,7 @@
 import type { PrismaClient } from "../generated/prisma/client.js";
 import { BadRequestError, ConflictError, ForbiddenError, NotFoundError } from "../common/exceptions.js";
 import type { CreateOrderRequest, OrderResponse, UpdateOrderStatusRequest } from "../schemas/orders.schema.js";
+import { websocketService } from "./websocket.service.js";
 
 const VALID_TRANSITIONS: Record<string, string[]> = {
   PENDING: ["CONFIRMED", "CANCELLED"],
@@ -79,7 +80,18 @@ export const createOrder = async (
     },
   });
 
-  return mapOrderToResponse(order);
+  const response = mapOrderToResponse(order);
+
+  // 🎯 Envoyer la notification WebSocket
+  websocketService.notifyRestaurant(input.restaurantId, "new-order", {
+    orderId: order.id,
+    restaurantId: input.restaurantId,
+    totalPrice: totalPrice,
+    itemCount: order.items.length,
+    createdAt: order.createdAt.toISOString(),
+  });
+
+  return response;
 };
 
 export const getOrderById = async (prisma: PrismaClient, orderId: string) => {
