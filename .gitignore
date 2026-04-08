@@ -1,0 +1,11 @@
+node_modules
+# Keep environment variables out of version control
+
+/generated/prisma
+dist
+.env
+.env.keys
+docker-compose.yml
+
+# Utility scripts
+*.mjs

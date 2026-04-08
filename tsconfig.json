@@ -1,0 +1,20 @@
+{
+  "version": "2.4.2",
+  "compilerOptions": {
+    "target": "esnext", // Utilise les dernières fonctionnalités JavaScript (comme async/await)
+    "module": "es2022", // Cible le module Node.js
+    "experimentalDecorators": true, // Active le support des décorateurs
+    "emitDecoratorMetadata": true, // Permet de générer des métadonnées pour les décorateurs
+    "moduleResolution": "node",
+    "strict": true, // Active les vérifications strictes
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "dist"
+  },
+  "ts-node": {
+    "files": true
+  },
+  "include": ["./**/*"],
+  "exclude": ["node_modules", "dist"]
+}

@@ -1,0 +1,171 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum UserRole {
+  USER
+  RESTAURANT
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PREPARING
+  READY
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum DishCategory {
+  APPETIZER
+  MAIN_COURSE
+  DESSERT
+  BEVERAGE
+  SIDE_DISH
+}
+
+// ============================================================================
+// MODELS
+// ============================================================================
+
+model User {
+  id              String      @id @default(uuid())
+  email           String      @unique
+  password        String
+  firstName       String?
+  lastName        String?
+  phone           String?
+  role            UserRole    @default(USER)
+  profileImage    String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relations
+  restaurant      Restaurant?
+  orders          Order[]
+  ratings         Rating[]
+}
+
+model Restaurant {
+  id              String      @id @default(uuid())
+  name            String
+  description     String?
+  address         String
+  city            String
+  phone           String?
+  email           String?
+  image           String?
+  averageRating   Float       @default(0.0)
+  isOpen          Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // FK - Un user avec role RESTAURANT a exactement 1 restaurant
+  userId          String      @unique
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Relations
+  dishes          Dish[]
+  orders          Order[]
+  ratings         Rating[]
+}
+
+model Dish {
+  id              String      @id @default(uuid())
+  name            String
+  description     String?
+  price           Decimal     @db.Decimal(10, 2)
+  image           String?
+  category        DishCategory
+  available       Boolean     @default(true)
+  preparationTime Int?        // en minutes
+  calories        Int?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // FK - Un dish appartient à 1 restaurant
+  restaurantId    String
+  restaurant      Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  // Relations
+  orderItems      OrderItem[]
+}
+
+model Order {
+  id              String      @id @default(uuid())
+  totalPrice      Decimal     @db.Decimal(10, 2)
+  status          OrderStatus @default(PENDING)
+  deliveryAddress String
+  deliveryCity    String
+  notes           String?
+  estimatedTime   Int?        // en minutes
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // FK - Une commande est créée par 1 user
+  userId          String
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // FK - Une commande est pour 1 restaurant
+  restaurantId    String
+  restaurant      Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Restrict)
+
+  // Relations
+  items           OrderItem[]
+}
+
+// Table de jointure pour la relation N:N entre Order et Dish
+model OrderItem {
+  id              String      @id @default(uuid())
+  quantity        Int
+  unitPrice       Decimal     @db.Decimal(10, 2)
+  subtotal        Decimal     @db.Decimal(10, 2)
+  specialInstructions String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // FK - Chaque item appartient à 1 commande
+  orderId         String
+  order           Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  // FK - Chaque item referece 1 plat
+  dishId          String
+  dish            Dish        @relation(fields: [dishId], references: [id], onDelete: Restrict)
+
+  @@unique([orderId, dishId])
+}
+
+model Rating {
+  id              String      @id @default(uuid())
+  score           Int         // 1-5 stars
+  comment         String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // FK - Un rating provient d'1 user
+  userId          String
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // FK - Un rating est pour 1 restaurant
+  restaurantId    String
+  restaurant      Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, restaurantId])
+}
