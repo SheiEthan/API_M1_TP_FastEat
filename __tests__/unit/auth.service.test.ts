@@ -49,8 +49,6 @@ describe("Auth Service - Unit Tests", () => {
       expect(result).toEqual({
         id: "user-123",
         email: "newuser@example.com",
-        firstName: "John",
-        lastName: "Doe",
         role: "USER",
       });
 
@@ -112,8 +110,6 @@ describe("Auth Service - Unit Tests", () => {
       expect(result).toEqual({
         id: "user-456",
         email: "user@example.com",
-        firstName: "John",
-        lastName: "User",
         role: "USER",
       });
     });

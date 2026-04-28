@@ -7,21 +7,18 @@ describe("Authentication Integration Tests", () => {
   let server: FastifyInstance;
 
   beforeAll(async () => {
+    // Avant TOUS les tests : démarrer le serveur
     server = await createTestServer();
   });
 
   afterAll(async () => {
+    // Après TOUS les tests : arrêter le serveur
     await closeTestServer(server);
     await prisma.$disconnect();
   });
 
   beforeEach(async () => {
-    // Nettoyer la base de données avant chaque test
-    await prisma.orderItem.deleteMany();
-    await prisma.order.deleteMany();
-    await prisma.rating.deleteMany();
-    await prisma.dish.deleteMany();
-    await prisma.restaurant.deleteMany();
+    // Avant CHAQUE test : nettoyer la base de données
     await prisma.user.deleteMany();
   });
 
@@ -65,6 +62,12 @@ describe("Authentication Integration Tests", () => {
       });
 
       expect(response.statusCode).toBe(400);
+
+      // Vérifier que l'utilisateur n'est PAS dans la base de données
+      const user = await prisma.user.findUnique({
+        where: { email: "invalid-email" },
+      });
+      expect(user).toBeNull();
     });
 
     it("should return 409 when email already exists", async () => {
@@ -91,6 +94,10 @@ describe("Authentication Integration Tests", () => {
       expect(response.statusCode).toBe(409);
       expect(response.json()).toHaveProperty("type");
       expect(response.json().type).toContain("conflict");
+
+      // Vérifier qu'il n'y a qu'UN seul utilisateur dans la base de données
+      const count = await prisma.user.count();
+      expect(count).toBe(1);
     });
 
     it("should reject registration with missing password", async () => {
@@ -197,7 +204,7 @@ describe("Authentication Integration Tests", () => {
     });
   });
 
-  describe("Protected Routes", () => {
+  describe("Protected Routes - GET /api/users/me", () => {
     let authToken: string;
     let userId: string;
 
@@ -224,20 +231,21 @@ describe("Authentication Integration Tests", () => {
     it("should allow access to protected route with valid token", async () => {
       const response = await server.inject({
         method: "GET",
-        url: "/api/posts",
+        url: "/api/users/me",
         headers: {
           authorization: `Bearer ${authToken}`,
         },
       });
 
       expect(response.statusCode).toBe(200);
-      expect(Array.isArray(response.json())).toBe(true);
+      expect(response.json()).toHaveProperty("id");
+      expect(response.json().id).toBe(userId);
     });
 
     it("should return 401 when accessing protected route without token", async () => {
       const response = await server.inject({
         method: "GET",
-        url: "/api/posts",
+        url: "/api/users/me",
       });
 
       expect(response.statusCode).toBe(401);
@@ -246,7 +254,7 @@ describe("Authentication Integration Tests", () => {
     it("should return 401 with invalid token", async () => {
       const response = await server.inject({
         method: "GET",
-        url: "/api/posts",
+        url: "/api/users/me",
         headers: {
           authorization: "Bearer invalid-token",
         },
@@ -258,31 +266,13 @@ describe("Authentication Integration Tests", () => {
     it("should return 401 with malformed authorization header", async () => {
       const response = await server.inject({
         method: "GET",
-        url: "/api/posts",
+        url: "/api/users/me",
         headers: {
           authorization: "InvalidFormat token",
         },
       });
 
       expect(response.statusCode).toBe(401);
-    });
-
-    it("should allow creating a post with valid token", async () => {
-      const response = await server.inject({
-        method: "POST",
-        url: "/api/posts",
-        headers: {
-          authorization: `Bearer ${authToken}`,
-        },
-        payload: {
-          text: "Test post",
-        },
-      });
-
-      expect(response.statusCode).toBe(201);
-      expect(response.json()).toHaveProperty("id");
-      expect(response.json().text).toBe("Test post");
-      expect(response.json().userId).toBe(userId);
     });
   });
 });

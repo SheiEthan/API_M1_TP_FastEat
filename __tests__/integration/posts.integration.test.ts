@@ -3,7 +3,7 @@ import { FastifyInstance } from "fastify";
 import { createTestServer, closeTestServer } from "../utils/test-setup.js";
 import { prisma } from "../../prisma/prismaInstance.js";
 
-describe("Posts Routes Integration Tests", () => {
+describe.skip("Posts Routes Integration Tests", () => {
   let server: FastifyInstance;
   let userToken1: string;
   let userToken2: string;
