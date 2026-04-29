@@ -54,17 +54,17 @@ jobs:
       - name: Generate Prisma Client
         run: npx prisma generate
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL: mariadb://root:${{ secrets.MARIADB_ROOT_PASSWORD }}@127.0.0.1:3306/orm
 
       - name: Apply migrations
         run: npx prisma db push
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL: mariadb://root:${{ secrets.MARIADB_ROOT_PASSWORD }}@127.0.0.1:3306/orm
 
       - name: Run tests
         run: npm test
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL: mariadb://root:${{ secrets.MARIADB_ROOT_PASSWORD }}@127.0.0.1:3306/orm
 
       - name: Login to GHCR
         if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
