@@ -25,6 +25,9 @@ export const restaurantRoutes = async (app: FastifyInstance) => {
     {
       onRequest: [authorize(["RESTAURANT"])],
       schema: {
+        tags: ["Restaurants"],
+        summary: "Créer un restaurant",
+        security: [{ bearerAuth: [] }],
         body: CreateRestaurantSchema,
         response: {
           201: RestaurantResponseSchema,
@@ -50,6 +53,8 @@ export const restaurantRoutes = async (app: FastifyInstance) => {
     "/",
     {
       schema: {
+        tags: ["Restaurants"],
+        summary: "Lister tous les restaurants",
         querystring: PaginationQuerySchema,
         response: {
           200: createPaginatedSchema(RestaurantResponseSchema),
@@ -71,6 +76,9 @@ export const restaurantRoutes = async (app: FastifyInstance) => {
     {
       onRequest: [authorize(["RESTAURANT"])],
       schema: {
+        tags: ["Restaurants"],
+        summary: "Mon restaurant",
+        security: [{ bearerAuth: [] }],
         response: {
           200: RestaurantResponseSchema,
           401: ErrorResponseSchema,
@@ -103,6 +111,8 @@ export const restaurantRoutes = async (app: FastifyInstance) => {
     "/:restaurantId",
     {
       schema: {
+        tags: ["Restaurants"],
+        summary: "Détails d'un restaurant",
         response: {
           200: RestaurantResponseSchema,
           404: ErrorResponseSchema,
@@ -132,6 +142,9 @@ export const restaurantRoutes = async (app: FastifyInstance) => {
     {
       onRequest: [authorize(["RESTAURANT"])],
       schema: {
+        tags: ["Restaurants"],
+        summary: "Modifier mon restaurant",
+        security: [{ bearerAuth: [] }],
         body: UpdateRestaurantSchema,
         response: {
           200: RestaurantResponseSchema,
@@ -176,6 +189,9 @@ export const restaurantRoutes = async (app: FastifyInstance) => {
     {
       onRequest: [authorize(["RESTAURANT"])],
       schema: {
+        tags: ["Restaurants"],
+        summary: "Supprimer mon restaurant",
+        security: [{ bearerAuth: [] }],
         response: {
           204: { type: "null" },
           401: ErrorResponseSchema,

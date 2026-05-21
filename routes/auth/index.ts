@@ -17,6 +17,8 @@ export const authRoutes = async (app: FastifyInstance) => {
     "/register",
     {
       schema: {
+        tags: ["Auth"],
+        summary: "Créer un compte",
         body: RegisterSchema,
         response: {
           201: TokenResponseSchema,
@@ -39,6 +41,8 @@ export const authRoutes = async (app: FastifyInstance) => {
     "/login",
     {
       schema: {
+        tags: ["Auth"],
+        summary: "Se connecter",
         body: LoginSchema,
         response: {
           200: TokenResponseSchema,
@@ -62,6 +66,9 @@ export const authRoutes = async (app: FastifyInstance) => {
     {
       onRequest: [authorize()],
       schema: {
+        tags: ["Auth"],
+        summary: "Récupérer mon profil",
+        security: [{ bearerAuth: [] }],
         response: {
           200: {
             type: "object",

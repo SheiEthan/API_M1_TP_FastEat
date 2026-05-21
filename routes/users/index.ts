@@ -24,6 +24,9 @@ export const userRoutes = async (app: FastifyInstance) => {
     {
       preHandler: [app.authenticate, app.authorize(["ADMIN"])],
       schema: {
+        tags: ["Users"],
+        summary: "Lister tous les utilisateurs",
+        security: [{ bearerAuth: [] }],
         response: {
           200: {
             type: "array",
@@ -44,6 +47,9 @@ export const userRoutes = async (app: FastifyInstance) => {
     {
       preHandler: [app.authenticate, app.authorize(["ADMIN"])],
       schema: {
+        tags: ["Users"],
+        summary: "Récupérer un utilisateur",
+        security: [{ bearerAuth: [] }],
         params: {
           type: "object",
           properties: {
@@ -69,6 +75,9 @@ export const userRoutes = async (app: FastifyInstance) => {
     {
       preHandler: [app.authenticate, app.authorize(["ADMIN"])],
       schema: {
+        tags: ["Users"],
+        summary: "Créer un utilisateur",
+        security: [{ bearerAuth: [] }],
         body: CreateUserSchema,
         response: {
           201: UserResponseSchema,
@@ -87,6 +96,9 @@ export const userRoutes = async (app: FastifyInstance) => {
     {
       preHandler: [app.authenticate, app.authorize(["ADMIN"])],
       schema: {
+        tags: ["Users"],
+        summary: "Modifier un utilisateur",
+        security: [{ bearerAuth: [] }],
         params: {
           type: "object",
           properties: {
@@ -117,6 +129,9 @@ export const userRoutes = async (app: FastifyInstance) => {
     {
       preHandler: [app.authenticate, app.authorize(["ADMIN"])],
       schema: {
+        tags: ["Users"],
+        summary: "Supprimer un utilisateur",
+        security: [{ bearerAuth: [] }],
         params: {
           type: "object",
           properties: {

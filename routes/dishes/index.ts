@@ -23,6 +23,8 @@ export const dishesRoutes = async (app: FastifyInstance) => {
     "/:restaurantId/dishes",
     {
       schema: {
+        tags: ["Dishes"],
+        summary: "Lister les plats d'un restaurant",
         querystring: PaginationQuerySchema,
         response: {
           200: createPaginatedSchema(DishResponseSchema),
@@ -50,6 +52,9 @@ export const dishesRoutes = async (app: FastifyInstance) => {
     {
       onRequest: [authorize(["RESTAURANT"])],
       schema: {
+        tags: ["Dishes"],
+        summary: "Créer un plat",
+        security: [{ bearerAuth: [] }],
         body: CreateDishSchema,
         response: {
           201: DishResponseSchema,
@@ -76,6 +81,8 @@ export const dishesRoutes = async (app: FastifyInstance) => {
     "/:restaurantId/dishes/:dishId",
     {
       schema: {
+        tags: ["Dishes"],
+        summary: "Détails d'un plat",
         response: {
           200: DishResponseSchema,
           404: ErrorResponseSchema,
@@ -97,6 +104,9 @@ export const dishesRoutes = async (app: FastifyInstance) => {
     {
       onRequest: [authorize(["RESTAURANT"])],
       schema: {
+        tags: ["Dishes"],
+        summary: "Modifier un plat",
+        security: [{ bearerAuth: [] }],
         body: UpdateDishSchema,
         response: {
           200: DishResponseSchema,
@@ -124,6 +134,9 @@ export const dishesRoutes = async (app: FastifyInstance) => {
     {
       onRequest: [authorize(["RESTAURANT"])],
       schema: {
+        tags: ["Dishes"],
+        summary: "Supprimer un plat",
+        security: [{ bearerAuth: [] }],
         response: {
           204: { type: "null" },
           401: ErrorResponseSchema,

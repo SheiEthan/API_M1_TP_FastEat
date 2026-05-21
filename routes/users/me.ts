@@ -21,6 +21,9 @@ export const meRoutes = async (app: FastifyInstance) => {
     {
       onRequest: [authorize(["USER", "RESTAURANT", "ADMIN"])],
       schema: {
+        tags: ["Users"],
+        summary: "Mon profil",
+        security: [{ bearerAuth: [] }],
         response: {
           200: UserResponseSchema,
           401: ErrorResponseSchema,
@@ -41,6 +44,9 @@ export const meRoutes = async (app: FastifyInstance) => {
     {
       onRequest: [authorize(["USER", "RESTAURANT", "ADMIN"])],
       schema: {
+        tags: ["Users"],
+        summary: "Modifier mon profil",
+        security: [{ bearerAuth: [] }],
         body: UpdateProfileSchema,
         response: {
           200: UserResponseSchema,
@@ -68,6 +74,9 @@ export const meRoutes = async (app: FastifyInstance) => {
     {
       onRequest: [authorize(["USER", "RESTAURANT", "ADMIN"])],
       schema: {
+        tags: ["Users"],
+        summary: "Supprimer mon compte",
+        security: [{ bearerAuth: [] }],
         response: {
           204: { type: "null" },
           401: ErrorResponseSchema,

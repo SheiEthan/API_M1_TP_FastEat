@@ -27,6 +27,9 @@ export const ordersRoutes = async (app: FastifyInstance) => {
     {
       onRequest: [authorize(["USER"])],
       schema: {
+        tags: ["Orders"],
+        summary: "Mes commandes",
+        security: [{ bearerAuth: [] }],
         querystring: PaginationQuerySchema,
         response: {
           200: createPaginatedSchema(OrderResponseSchema),
@@ -63,6 +66,9 @@ export const ordersRoutes = async (app: FastifyInstance) => {
     {
       onRequest: [authorize(["RESTAURANT"])],
       schema: {
+        tags: ["Orders"],
+        summary: "Commandes de mon restaurant",
+        security: [{ bearerAuth: [] }],
         querystring: PaginationQuerySchema,
         response: {
           200: createPaginatedSchema(OrderResponseSchema),
@@ -118,6 +124,9 @@ export const ordersRoutes = async (app: FastifyInstance) => {
     {
       onRequest: [authorize(["USER"])],
       schema: {
+        tags: ["Orders"],
+        summary: "Créer une commande",
+        security: [{ bearerAuth: [] }],
         body: CreateOrderSchema,
         response: {
           201: OrderResponseSchema,
@@ -142,6 +151,9 @@ export const ordersRoutes = async (app: FastifyInstance) => {
     {
       onRequest: [authorize(["RESTAURANT"])],
       schema: {
+        tags: ["Orders"],
+        summary: "Changer le statut d'une commande",
+        security: [{ bearerAuth: [] }],
         body: UpdateOrderStatusSchema,
         response: {
           200: OrderResponseSchema,
@@ -185,6 +197,9 @@ export const ordersRoutes = async (app: FastifyInstance) => {
     {
       onRequest: [authorize(["USER", "RESTAURANT"])],
       schema: {
+        tags: ["Orders"],
+        summary: "Détails d'une commande",
+        security: [{ bearerAuth: [] }],
         response: {
           200: OrderResponseSchema,
           401: ErrorResponseSchema,
@@ -224,6 +239,9 @@ export const ordersRoutes = async (app: FastifyInstance) => {
     {
       onRequest: [authorize(["USER"])],
       schema: {
+        tags: ["Orders"],
+        summary: "Annuler une commande",
+        security: [{ bearerAuth: [] }],
         response: {
           204: { type: "null" },
           401: ErrorResponseSchema,

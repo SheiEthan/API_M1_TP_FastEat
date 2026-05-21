@@ -2,6 +2,9 @@ import "./config/dotenvx.js";
 import fastify, { FastifyError, FastifyReply, FastifyRequest } from "fastify";
 import cors from "@fastify/cors";
 import websocket from "@fastify/websocket";
+import swagger from "@fastify/swagger";
+import swaggerUi from "@fastify/swagger-ui";
+import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { registerRoutes } from "./routes/index.js";
@@ -16,7 +19,7 @@ const __dirname = dirname(__filename);
 
 const server = fastify({
   logger: true,
-});
+}).withTypeProvider<TypeBoxTypeProvider>();
 
 // Gestionnaire d'erreurs global (RFC 7807)
 server.setErrorHandler((error, request, reply) => {
@@ -68,6 +71,42 @@ const start = async () => {
     server.decorate("prisma", prisma);
 
     await server.register(cors, {});
+
+    // Swagger / OpenAPI
+    await server.register(swagger, {
+      openapi: {
+        openapi: "3.0.3",
+        info: {
+          title: "Fastify Demo API",
+          description: "API REST pour la gestion de restaurants, plats et commandes",
+          version: "1.0.0",
+        },
+        components: {
+          securitySchemes: {
+            bearerAuth: {
+              type: "http",
+              scheme: "bearer",
+              bearerFormat: "JWT",
+            },
+          },
+        },
+        tags: [
+          { name: "Auth", description: "Authentification et profil" },
+          { name: "Users", description: "Gestion des utilisateurs" },
+          { name: "Restaurants", description: "Gestion des restaurants" },
+          { name: "Dishes", description: "Gestion des plats" },
+          { name: "Orders", description: "Gestion des commandes" },
+        ],
+      },
+    });
+
+    await server.register(swaggerUi, {
+      routePrefix: "/docs",
+      uiConfig: {
+        docExpansion: "list",
+        deepLinking: true,
+      },
+    });
 
     // Enregistrer le plugin WebSocket
     await server.register(websocket);
