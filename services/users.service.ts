@@ -33,7 +33,12 @@ export async function updateUser(
     where: { id: userId },
     data: {
       email: data.email || user.email,
-      firstName: data.firstName || user.firstName,
+      firstName: data.firstName ?? user.firstName,
+      lastName: data.lastName ?? user.lastName,
+      phone: data.phone ?? user.phone,
+      street: data.street ?? (user as any).street,
+      postalCode: data.postalCode ?? (user as any).postalCode,
+      city: data.city ?? (user as any).city,
     },
     omit: {
       password: true,

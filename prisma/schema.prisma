@@ -52,6 +52,9 @@ model User {
   firstName       String?
   lastName        String?
   phone           String?
+  street          String?
+  postalCode      String?
+  city            String?
   role            UserRole    @default(USER)
   profileImage    String?
   createdAt       DateTime    @default(now())

@@ -5,6 +5,10 @@ export const UserSchema = Type.Object({
   email: Type.String({ format: "email" }),
   firstName: Type.Optional(Type.String()),
   lastName: Type.Optional(Type.String()),
+  phone: Type.Optional(Type.String()),
+  street: Type.Optional(Type.String()),
+  postalCode: Type.Optional(Type.String()),
+  city: Type.Optional(Type.String()),
   role: Type.Enum({ USER: "USER", ADMIN: "ADMIN", RESTAURANT: "RESTAURANT" }),
   createdAt: Type.String({ format: "date-time" }),
   updatedAt: Type.String({ format: "date-time" }),
@@ -29,6 +33,11 @@ export const UpdateProfileSchema = Type.Partial(
   Type.Object({
     email: Type.String({ format: "email" }),
     firstName: Type.String({ minLength: 1 }),
+    lastName: Type.String({ minLength: 1 }),
+    phone: Type.String(),
+    street: Type.String(),
+    postalCode: Type.String(),
+    city: Type.String(),
   }),
 );
 

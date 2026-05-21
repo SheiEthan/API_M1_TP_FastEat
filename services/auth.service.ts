@@ -19,6 +19,8 @@ export interface AuthResponse {
   id: string;
   email: string;
   role: string;
+  firstName?: string | null;
+  lastName?: string | null;
 }
 
 /**
@@ -53,6 +55,8 @@ export const register = async (
     id: user.id,
     email: user.email,
     role: user.role,
+    firstName: user.firstName,
+    lastName: user.lastName,
   };
 };
 
@@ -81,5 +85,7 @@ export const login = async (
     id: user.id,
     email: user.email,
     role: user.role,
+    firstName: user.firstName,
+    lastName: user.lastName,
   };
 };

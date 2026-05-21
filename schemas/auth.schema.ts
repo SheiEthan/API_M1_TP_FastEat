@@ -31,6 +31,8 @@ export const TokenResponseSchema = Type.Object({
     id: Type.String(),
     email: Type.String(),
     role: Type.String(),
+    firstName: Type.Optional(Type.String()),
+    lastName: Type.Optional(Type.String()),
   }),
 });
 
