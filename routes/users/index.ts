@@ -146,7 +146,7 @@ export const userRoutes = async (app: FastifyInstance) => {
     },
     async (request, reply) => {
       const { id } = request.params as { id: string };
-      const deletedUser = await userService.deleteUser(id, request.user.id);
+      const deletedUser = await userService.deleteUser(id, id);
       return reply.send(deletedUser);
     },
   );

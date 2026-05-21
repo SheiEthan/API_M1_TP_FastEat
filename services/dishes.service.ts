@@ -102,6 +102,20 @@ export const getDishById = async (
 };
 
 /**
+ * Récupère tous les plats (avec filtre optionnel par restaurant)
+ */
+export const getAllDishes = async (
+  prisma: PrismaClient,
+  restaurantId?: string,
+): Promise<DishResponse[]> => {
+  const dishes = await prisma.dish.findMany({
+    where: restaurantId ? { restaurantId } : undefined,
+    orderBy: { createdAt: "desc" },
+  });
+  return dishes.map(mapDishToResponse);
+};
+
+/**
  * Met à jour un plat (vérifier la propriété du restaurant)
  */
 export const updateDish = async (

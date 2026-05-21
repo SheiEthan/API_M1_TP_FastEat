@@ -81,9 +81,8 @@ export class UserService {
     });
   }
 
-  async deleteUser(userId: string, currentUserId: string) {
-    // Vérifier que l'utilisateur ne peut supprimer que son propre compte
-    if (userId !== currentUserId) {
+  async deleteUser(userId: string, currentUserId: string, currentUserRole?: string) {
+    if (currentUserRole !== 'ADMIN' && userId !== currentUserId) {
       throw new ForbiddenError(
         "Vous n'avez pas la permission de supprimer cet utilisateur",
       );

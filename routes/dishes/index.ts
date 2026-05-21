@@ -3,6 +3,7 @@ import {
   createDish,
   getDishesByRestaurant,
   getDishById,
+  getAllDishes,
   updateDish,
   deleteDish,
 } from "../../services/dishes.service.js";
@@ -153,5 +154,41 @@ export const dishesRoutes = async (app: FastifyInstance) => {
       );
       return reply.status(204).send();
     }
+  );
+};
+
+export const dishesGlobalRoutes = async (app: FastifyInstance) => {
+  app.get<{ Querystring: { restaurantId?: string } }>(
+    "/",
+    {
+      schema: {
+        tags: ["Dishes"],
+        summary: "Lister tous les plats",
+        querystring: {
+          type: "object",
+          properties: { restaurantId: { type: "string", description: "Filtrer par restaurant" } },
+        },
+        response: { 200: { type: "array", items: DishResponseSchema } },
+      },
+    },
+    async (request, reply) => {
+      const dishes = await getAllDishes(app.prisma, request.query.restaurantId);
+      return reply.status(200).send(dishes);
+    },
+  );
+
+  app.get<{ Params: { dishId: string } }>(
+    "/:dishId",
+    {
+      schema: {
+        tags: ["Dishes"],
+        summary: "Détails d'un plat par ID",
+        response: { 200: DishResponseSchema, 404: ErrorResponseSchema },
+      },
+    },
+    async (request, reply) => {
+      const dish = await getDishById(app.prisma, request.params.dishId);
+      return reply.status(200).send(dish);
+    },
   );
 };

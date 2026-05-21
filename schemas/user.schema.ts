@@ -3,7 +3,8 @@ import { Type, Static } from "@sinclair/typebox";
 export const UserSchema = Type.Object({
   id: Type.String({ format: "uuid" }),
   email: Type.String({ format: "email" }),
-  firstName: Type.String(),
+  firstName: Type.Optional(Type.String()),
+  lastName: Type.Optional(Type.String()),
   role: Type.Enum({ USER: "USER", ADMIN: "ADMIN", RESTAURANT: "RESTAURANT" }),
   createdAt: Type.String({ format: "date-time" }),
   updatedAt: Type.String({ format: "date-time" }),
@@ -18,6 +19,7 @@ export const CreateUserSchema = Type.Object({
 export const UpdateUserSchema = Type.Object({
   email: Type.Optional(Type.String({ format: "email" })),
   firstName: Type.Optional(Type.String({ minLength: 1 })),
+  lastName: Type.Optional(Type.String({ minLength: 1 })),
   password: Type.Optional(Type.String({ minLength: 6 })),
 });
 
