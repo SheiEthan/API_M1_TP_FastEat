@@ -50,6 +50,8 @@ describe("Auth Service - Unit Tests", () => {
         id: "user-123",
         email: "newuser@example.com",
         role: "USER",
+        firstName: "John",
+        lastName: "Doe",
       });
 
       // Vérifier que les bonnes méthodes ont été appelées
@@ -111,6 +113,8 @@ describe("Auth Service - Unit Tests", () => {
         id: "user-456",
         email: "user@example.com",
         role: "USER",
+        firstName: "John",
+        lastName: "User",
       });
     });
 
