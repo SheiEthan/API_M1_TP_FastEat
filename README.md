@@ -6,7 +6,7 @@ API REST pour le frontend de mon projet scolaire **FastEat M1**.
 
 - **Framework**: Fastify 5.6 + TypeScript
 - **Database**: Prisma ORM + MySQL 8.0
-- **Auth**: JWT + bcryptjs
+- **Auth**: JWT (access 15 min) + Refresh Token (7 jours) + bcryptjs
 - **Validation**: TypeBox schemas
 - **Runtime**: Node.js (ES modules)
 
@@ -26,7 +26,7 @@ Le serveur démarre sur `http://localhost:3000`
 
 | Préfixe                       | Description                                      |
 | ----------------------------- | ------------------------------------------------ |
-| `/api/auth`                   | Register, login, me                              |
+| `/api/auth`                   | Register, login, refresh, logout, me             |
 | `/api/users/me`               | Profil utilisateur (GET, PATCH, DELETE)          |
 | `/api/restaurants`            | CRUD restaurants + list avec pagination          |
 | `/api/restaurants/:id/dishes` | Plats par restaurant (list, filters, pagination) |
@@ -56,9 +56,13 @@ Le serveur démarre sur `http://localhost:3000`
 
 ✅ **Authentification & Authorization**
 
-- JWT tokens
+- JWT access token (expiration 15 min)
+- Refresh token (expiration 7 jours, stocké hashé en DB)
+- Rotation automatique du refresh token à chaque renouvellement
+- Révocation via `POST /auth/logout`
 - Roles (USER, RESTAURANT, ADMIN)
 - Ownership verification
+- Rate limiting sur le login
 
 ✅ **Restaurants & Dishes**
 
@@ -80,18 +84,30 @@ Le serveur démarre sur `http://localhost:3000`
 
 ## 🧪 Exemples
 
-### Register
+### Register / Login
 
 ```bash
 curl -X POST http://localhost:3000/api/auth/register \
   -H "Content-Type: application/json" \
-  -d '{
-    "email":"user@example.com",
-    "password":"Pass123!",
-    "firstName":"John",
-    "lastName":"Doe",
-    "role":"USER"
-  }'
+  -d '{"email":"user@example.com","password":"Pass123!","firstName":"John","lastName":"Doe"}'
+```
+
+Retourne `{ accessToken, refreshToken, user }`.
+
+### Refresh token
+
+```bash
+curl -X POST http://localhost:3000/api/auth/refresh \
+  -H "Content-Type: application/json" \
+  -d '{"refreshToken":"<token>"}'
+```
+
+### Logout
+
+```bash
+curl -X POST http://localhost:3000/api/auth/logout \
+  -H "Content-Type: application/json" \
+  -d '{"refreshToken":"<token>"}'
 ```
 
 ### List Restaurants (pagination)
@@ -127,6 +143,7 @@ curl -X POST http://localhost:3000/api/orders \
 ### Models
 
 - **User** (id, email, password, firstName, lastName, role)
+- **RefreshToken** (id, tokenHash, userId, expiresAt)
 - **Restaurant** (id, name, address, city, userId)
 - **Dish** (id, name, price, category, restaurantId)
 - **Order** (id, status, totalPrice, userId, restaurantId)
