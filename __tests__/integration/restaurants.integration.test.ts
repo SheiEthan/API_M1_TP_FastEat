@@ -52,14 +52,14 @@ describe("Restaurant Routes Integration Tests", () => {
       url: "/api/auth/login",
       payload: { email: "owner@restaurant.com", password: "password123" },
     });
-    restaurantToken = ownerLogin.json().token;
+    restaurantToken = ownerLogin.json().accessToken;
 
     const userLogin = await server.inject({
       method: "POST",
       url: "/api/auth/login",
       payload: { email: "user@example.com", password: "password123" },
     });
-    userToken = userLogin.json().token;
+    userToken = userLogin.json().accessToken;
   });
 
   // ─── GET /api/restaurants ────────────────────────────────────────────────────
