@@ -26,7 +26,8 @@ export const UserResponseSchema = Type.Object({
 });
 
 export const TokenResponseSchema = Type.Object({
-  token: Type.String(),
+  accessToken: Type.String(),
+  refreshToken: Type.String(),
   user: Type.Object({
     id: Type.String(),
     email: Type.String(),
@@ -34,6 +35,16 @@ export const TokenResponseSchema = Type.Object({
     firstName: Type.Optional(Type.String()),
     lastName: Type.Optional(Type.String()),
   }),
+});
+
+export const RefreshTokenRequestSchema = Type.Object(
+  { refreshToken: Type.String() },
+  { additionalProperties: false }
+);
+
+export const RefreshTokenResponseSchema = Type.Object({
+  accessToken: Type.String(),
+  refreshToken: Type.String(),
 });
 
 export const ErrorResponseSchema = Type.Object({
@@ -47,3 +58,4 @@ export type LoginRequest = Static<typeof LoginSchema>;
 export type RegisterRequest = Static<typeof RegisterSchema>;
 export type UserResponse = Static<typeof UserResponseSchema>;
 export type TokenResponse = Static<typeof TokenResponseSchema>;
+export type RefreshTokenRequest = Static<typeof RefreshTokenRequestSchema>;
