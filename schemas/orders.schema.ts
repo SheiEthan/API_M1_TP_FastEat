@@ -24,6 +24,8 @@ export type CreateOrderRequest = Static<typeof CreateOrderSchema>;
 export const OrderItemResponseSchema = Type.Object({
   id: Type.String({ format: "uuid" }),
   dishId: Type.String({ format: "uuid" }),
+  dishName: Type.Union([Type.String(), Type.Null()]),
+  dishImage: Type.Union([Type.String(), Type.Null()]),
   quantity: Type.Integer(),
   unitPrice: Type.Number(),
   subtotal: Type.Number(),

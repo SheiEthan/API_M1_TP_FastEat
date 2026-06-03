@@ -97,7 +97,7 @@ export const createOrder = async (
 export const getOrderById = async (prisma: PrismaClient, orderId: string) => {
   const order = await prisma.order.findUnique({
     where: { id: orderId },
-    include: { items: true },
+    include: { items: { include: { dish: true } } },
   });
 
   if (!order) {
@@ -116,7 +116,7 @@ export const getUserOrders = async (
   const [orders, total] = await Promise.all([
     prisma.order.findMany({
       where: { userId },
-      include: { items: true },
+      include: { items: { include: { dish: true } } },
       orderBy: { createdAt: "desc" },
       take: limit,
       skip: offset,
@@ -148,7 +148,7 @@ export const getRestaurantOrders = async (
         restaurantId,
         ...(status && { status: status as any }),
       },
-      include: { items: true },
+      include: { items: { include: { dish: true } } },
       orderBy: { createdAt: "desc" },
       take: limit,
       skip: offset,
@@ -180,7 +180,7 @@ export const updateOrderStatus = async (
 ) => {
   const order = await prisma.order.findUnique({
     where: { id: orderId },
-    include: { items: true },
+    include: { items: { include: { dish: true } } },
   });
 
   if (!order) {
@@ -200,7 +200,7 @@ export const updateOrderStatus = async (
   const updatedOrder = await prisma.order.update({
     where: { id: orderId },
     data: { status: input.status as any },
-    include: { items: true },
+    include: { items: { include: { dish: true } } },
   });
 
   return mapOrderToResponse(updatedOrder);
@@ -213,7 +213,7 @@ export const cancelOrder = async (
 ) => {
   const order = await prisma.order.findUnique({
     where: { id: orderId },
-    include: { items: true },
+    include: { items: { include: { dish: true } } },
   });
 
   if (!order) {
@@ -231,7 +231,7 @@ export const cancelOrder = async (
   const cancelledOrder = await prisma.order.update({
     where: { id: orderId },
     data: { status: "CANCELLED" },
-    include: { items: true },
+    include: { items: { include: { dish: true } } },
   });
 
   return mapOrderToResponse(cancelledOrder);
@@ -250,6 +250,8 @@ const mapOrderToResponse = (order: any): OrderResponse => ({
   items: order.items.map((item: any) => ({
     id: item.id,
     dishId: item.dishId,
+    dishName: item.dish?.name ?? null,
+    dishImage: item.dish?.image ?? null,
     quantity: item.quantity,
     unitPrice: Number(item.unitPrice),
     subtotal: Number(item.subtotal),
